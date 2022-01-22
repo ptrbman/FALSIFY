@@ -4,3 +4,10 @@ void max_fact_0() {
   int ret = max(a,b);
   #FACT ret == 1
 }
+
+void max_fact_1() {
+  int a = 0;
+  int b = _;
+  int ret = max(a,b);
+  #FACT ret == 1
+}

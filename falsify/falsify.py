@@ -1,10 +1,10 @@
 ### Main file for running FALSIFY
 
 from falsify.cparser import parse_facts
-from falsify.eldarica import check_fact
+from falsify.eldarica import check_fact, get_counterexample
 
 def check_code_and_facts(code, facts):
-    # -Extract the code 
+    # Extract the code 
     file1 = open(code, 'r')
     codelines = file1.readlines()
 
@@ -35,6 +35,7 @@ def check_code_and_facts(code, facts):
             print("true")
             no_safe = no_safe + 1
         else:
-            print("false")
+            ret = get_counterexample("tmp/check.c", fact, f[fact].variables)
+            print("false (", ret, ")")
     print()
     print(str(no_safe), "/", str(len(f)), " facts were true.", sep="")

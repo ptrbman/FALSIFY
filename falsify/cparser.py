@@ -1,10 +1,11 @@
 import re
 
 class Fact():
-    def __init__(self, name, header, body):
+    def __init__(self, name, header, body, variables):
         self.name = name
         self.header= header
         self.body = body
+        self.variables = variables
 
     def __str__(self):
         return self.name + ": " + self.header
@@ -31,6 +32,14 @@ def isFactDeclaration(line):
     else:
         return None
 
+def isIntVariable(line):
+    r1 = re.findall("\s*int (\S*)\s.*", line)
+    if r1:
+        name = r1[0]
+        return name
+    else:
+        return None
+
 def parse_facts(filename):
     file1 = open(filename, 'r')
     lines = file1.readlines()
@@ -39,22 +48,27 @@ def parse_facts(filename):
     lastFactBody = []
     lastFactName = ""
     lastHeader = ""
+    lastVariables = []
     inFact = False
 
     for l in lines:
         line = l.rstrip()
         if isFactDeclaration(line):
             if inFact:
-                facts[lastFactName] = Fact(lastFactName, lastHeader, lastFactBody)
+                facts[lastFactName] = Fact(lastFactName, lastHeader, lastFactBody, lastVariables)
                 lastFactBody = []
+                lastVariables = []
             (returnType, name) = isFactDeclaration(line)
             lastFactName = name
             lastHeader = line
             inFact = True
         elif inFact:
+            if isIntVariable(line):
+                name = isIntVariable(line)
+                lastVariables.append(name)
             lastFactBody.append(line)
 
-    facts[lastFactName] = Fact(lastFactName, lastHeader, lastFactBody)
+    facts[lastFactName] = Fact(lastFactName, lastHeader, lastFactBody, lastVariables)
 
     return facts
 

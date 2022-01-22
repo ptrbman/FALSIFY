@@ -47,9 +47,9 @@ void max_fact_1() {
 where *b = _;* states that we do not wish to specify a specific value for *b*. Of course, now the fact is no longer true, so if we try to run **falsify** again:
 ````console
 ptr@host:~$ falsify max.c max.facts
-Found 2 fact to be checked...
-Fact max_fact_0: true
-Fact max_fact_1: false! (b = 0)
+Found 2 facts to be checked...
+Fact  max_fact_0 : true
+Fact  max_fact_1 : false ( a: 0 b: -1 ret: 0  )
 
 1/2 facts were true.
 ````
