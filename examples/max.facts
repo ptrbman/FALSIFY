@@ -20,11 +20,27 @@ void max_fact_2() {
   #FACT ret == 0
 }
 
-void max_fact_4() {
+void max_fact_3() {
   int a = _;
   int b = _;
   #ASSUME a > 0
   #ASSUME b < 0
   int ret = max(a,b);
   #FACT ret == a
+}
+
+void max_fact_a_greater_or_equal_to_b() {
+  int a = _;
+  int b = _;
+  #ASSUME a >= b
+  int ret = max(a,b);
+  #FACT ret == a
+}
+
+void max_fact_a_smaller_or_equal_to_b() {
+  int a = _;
+  int b = _;
+  #ASSUME a <= b
+  int ret = max(a,b);
+  #FACT ret == b
 }

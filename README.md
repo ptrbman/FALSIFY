@@ -2,7 +2,7 @@
 FALSIFY tool
 
 
-## Usage
+## Example: *max.c* 
 FALSIFY takes two files as input, a source-code file and a unit-facts file. A unit-fact has three parts to it. A pre-conditon, a block of code, and a post-condition.
 
 Consider **max.c**:
@@ -100,5 +100,21 @@ Fact  max_fact_4 : true
 3/4 facts were true.
 ````
 
+Actually, since this function is quite simple we can actually cover the entire input space with two facts (subsuming the above facts):
+````c
+void max_fact_a_greater_or_equal_to_b() {
+  int a = _;
+  int b = _;
+  #ASSUME a >= b
+  int ret = max(a,b);
+  #FACT ret == a
+}
 
-
+void max_fact_a_smaller_or_equal_to_b() {
+  int a = _;
+  int b = _;
+  #ASSUME a <= b
+  int ret = max(a,b);
+  #FACT ret == b
+}
+````
