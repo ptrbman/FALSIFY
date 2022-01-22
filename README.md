@@ -65,6 +65,27 @@ void max_fact_2() {
 }
 ````
 
+Now the fact is true, and thus we will get the following:
+````console
+ptr@host:~$ falsify max.c max.facts
+Found 3 facts to be checked...
+Fact  max_fact_0 : true
+Fact  max_fact_1 : false ( a: 0 b: 1 ret: 1  )
+Fact  max_fact_2 : true
 
+2/3 facts were true.
+````
+
+Now we are ready to make more interesting facts, for example we can say **if a is positive and b is negative, then max(a,b) will be equal to a**:
+````c
+void max_fact_3() {
+  int a = _;
+  int b = _;
+  #ASSUMPTION a > 0
+  #ASSUMPTION b < 0
+  int ret = max(a,b);
+  #FACT ret == a
+}
+````
 
 
