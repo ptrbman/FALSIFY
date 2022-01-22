@@ -19,3 +19,12 @@ void max_fact_2() {
   int ret = max(a,b);
   #FACT ret == 0
 }
+
+void max_fact_4() {
+  int a = _;
+  int b = _;
+  #ASSUME a > 0
+  #ASSUME b < 0
+  int ret = max(a,b);
+  #FACT ret == a
+}

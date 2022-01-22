@@ -59,7 +59,7 @@ So far we've seen assigning a specific value or no value to a variable. But it i
 void max_fact_2() {
   int a = 0;
   int b = _;
-  #ASSUMPTION b < 0
+  #ASSUME b < 0
   int ret = max(a,b);
   #FACT ret == 0
 }
@@ -81,11 +81,24 @@ Now we are ready to make more interesting facts, for example we can say **if a i
 void max_fact_3() {
   int a = _;
   int b = _;
-  #ASSUMPTION a > 0
-  #ASSUMPTION b < 0
+  #ASSUME a > 0
+  #ASSUME b < 0
   int ret = max(a,b);
   #FACT ret == a
 }
 ````
+Once again, running this will not falsify this fact:
+
+````console
+ptr@host:~$ falsify max.c max.facts
+Found 4 facts to be checked...
+Fact  max_fact_0 : true
+Fact  max_fact_1 : false ( a: 0 b: 1 ret: 1  )
+Fact  max_fact_2 : true
+Fact  max_fact_4 : true
+
+3/4 facts were true.
+````
+
 
 
