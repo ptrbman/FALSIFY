@@ -41,7 +41,7 @@ void max_fact_1() {
   int a = 0;
   int b = _;
   int ret = max(a,b);
-  #FACT ret == 1
+  #FACT ret == 0
 }
 ````
 where *b = _;* states that we do not wish to specify a specific value for *b*. Of course, now the fact is no longer true, so if we try to run **falsify** again:
@@ -52,6 +52,17 @@ Fact  max_fact_0 : true
 Fact  max_fact_1 : false ( a: 0 b: -1 ret: 0  )
 
 1/2 facts were true.
+````
+
+So far we've seen assigning a specific value or no value to a variable. But it is also possible to specify a constraint on a variable:
+````c
+void max_fact_2() {
+  int a = 0;
+  int b = _;
+  #ASSUMPTION b < 0
+  int ret = max(a,b);
+  #FACT ret == 0
+}
 ````
 
 

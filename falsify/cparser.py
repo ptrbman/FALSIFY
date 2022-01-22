@@ -18,7 +18,12 @@ class Fact():
                 # We need to change facts to asserts
                 (ws, retExp) = isFact(l)
                 newbody.append(ws + "assert(" + retExp + "); // AUTO-GENERATED")
+           elif isAssume(l):
+                # We need to change facts to asserts
+                (ws, retExp) = isAssume(l)
+                newbody.append(ws + "assume(" + retExp + "); // AUTO-GENERATED")
            else:
+ 
                 newbody.append(l)
 
         return "\n".join(newbody)
@@ -50,8 +55,8 @@ def parse_facts(filename):
     lastHeader = ""
     lastVariables = []
     inFact = False
-
-    for l in lines:
+    realLines = [l for l in lines if not l.lstrip().startswith("//")]
+    for l in realLines:
         line = l.rstrip()
         if isFactDeclaration(line):
             if inFact:
@@ -79,4 +84,9 @@ def isFact(line):
     else:
         return None
 
-
+def isAssume(line):
+    r1 = re.findall("(\s*)#ASSUME (.*)", line.rstrip())
+    if r1:
+        return (r1[0][0], r1[0][1].strip())
+    else:
+        return None
