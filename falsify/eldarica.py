@@ -1,5 +1,6 @@
 import subprocess
 import re
+import tempfile
 
 def parse_output(output):
     if output.strip() == "SAFE":
@@ -26,14 +27,14 @@ def parse_counterexample(output, variables):
     raise Execption("Counter-example has no final line...")
 
 # True if program is SAFE
-def check_fact(fileName, function):
-    command = ['lib/eldarica/eld', "-m:" + function, fileName]
+def check_fact(fileName, function, config):
+    command = [config["eldarica_dir"] + "eld", "-m:" + function, fileName]
     result = subprocess.run(command, stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
     return parse_output(output)
 
-def get_counterexample(fileName, function, variables):
-    command = ['lib/eldarica/eld', "-m:" + function, "-cex", fileName]
+def get_counterexample(fileName, function, variables, config):
+    command = [config["eldarica_dir"] + "eld", "-m:" + function, "-cex", fileName]
     result = subprocess.run(command, stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
     return parse_counterexample(output, variables)
@@ -43,8 +44,7 @@ def get_counterexample(fileName, function, variables):
 ## instead of the count.
 
 ## TODO: Refactor to have check_file, etc. for eldarica so we can re-use some code.
-def check_formula(formula, arguments):
-
+def check_formula(formula, arguments, config):
     # Write to a temporary file
     lines = []
     args = []
@@ -58,19 +58,20 @@ def check_formula(formula, arguments):
     lines.append("\t}")
     lines.append("}")
 
-    outfile = open("tmp/check.c", "w")
+    filename = config["tmp_dir"] + "/check.c"
+    outfile = open(filename, "w")
     for l in lines:
         outfile.write(l)
     outfile.close()
 
-    command = ['lib/eldarica/eld', "tmp/check.c"]
+    command = [config["eldarica_dir"] + "eld", filename]
     result = subprocess.run(command, stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
     is_covered = parse_output(output)
     if (is_covered):
         return None
     else:
-        command = ['lib/eldarica/eld', "-cex", "tmp/check.c"]
+        command = [config["eldarica_dir"] + "eld", "-cex", filename]
         result = subprocess.run(command, stdout=subprocess.PIPE)
         output = result.stdout.decode('utf-8')
         return parse_counterexample(output, args)

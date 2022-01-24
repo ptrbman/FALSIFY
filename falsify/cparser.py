@@ -96,6 +96,7 @@ def isFunDeclaration(line):
     else:
         return None
 
+    # TODO: How come if we have an integer fact it shows up in the list of facts?
 def isFactDeclaration(line):
     r1 = re.findall("(void) (.*)\\(\\)", line)
     if r1:

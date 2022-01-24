@@ -200,3 +200,138 @@ Found 2 facts to be checked...
 
 Coverage is complete for all functions found:  max
 ````
+
+# Verification-Driven Development
+As an analogue to test-driven development (TDD), we propose using unit-facts as a driving force for development. The developer gives facts (instead of tests) about the software intended to be written. When such a fact is falsified, the implementation is adjusted accordingly to make sure it becomes true. Then the code can be refactored, and all written facts can be used for regression. 
+
+We demonstrate this methodology by writing a simple library capable of doing min and max. 
+
+## Example: minmax
+The goal here is to write a simple library which can return the maximum or minimum of two integers. We begin with the **max** function. The first step is to write the simples implementation possible:
+````c
+int max(int a, int b) {
+    return 0;
+}
+````
+
+We save this in the file **src/minmax.c**. Next we write our first fact:
+
+````c
+void max_fact_b_greater_than_a() {
+    // Set-up
+    int a = _;
+    int b = _;
+    #ASSUME a <= b
+    
+    int real = max(a, b);
+    
+    #FACT real == b
+}
+````
+
+This is saved to the file **facts/minmax.facts**. Now we are ready to take the second step and check that our fact fails:
+
+````console
+ptr@host:~$ falsify src/max.c test/max.facts
+
+Found 1 facts to be checked...
+Fact  max_fact_0 : false ( a: 0 b: 1 real: 0  )
+
+0/1 facts were true.
+````
+
+Here we see that in the case of *a* equals 0, and *b* equals 1, we get 0 (when we should have one). Let's fix the implementation. In the spirit of VDD, we make the smallest fix possible, i.e., always return b:
+
+````c
+int max(int a, int b) {
+    return b;
+}
+````
+Of course this will work for our single fact, but we add the symmetrical one:
+````c
+void max_fact_b_smaller_than_a() {
+    // Set-up
+    int a = _;
+    int b = _;
+    #ASSUME a >= b
+    
+    int real = max(a, b);
+    
+    #FACT real == a
+}
+````
+
+Our check will now fail:
+
+````console
+ptr@host:~$ falsify src/max.c test/max.facts
+
+Found 2 facts to be checked...
+Fact  max_fact_b_greater_than_a : true
+Fact  max_fact_b_smaller_than_a : false ( a: 0 b: -1 real: -1  )
+
+1/2 facts were true.
+````
+
+The counter-example (*a* is zero, *b* is negative one) leads us to fix our implementation:
+
+````c
+int max(int a, int b) {
+  if (a < b)
+    return b;
+  else
+    return a;
+````
+
+Which will pass all test. We add the corresponding tests for the min-function (still in **minmax.facts**):
+````c
+void min_fact_b_greater_than_a() {
+    // Set-up
+    int a = _;
+    int b = _;
+    #ASSUME a <= b
+    
+    int real = min(a, b);
+    
+    #FACT real == a
+}
+
+void min_fact_b_smaller_than_a() {
+    // Set-up
+    int a = _;
+    int b = _;
+    #ASSUME a >= b
+    
+    int real = min(a, b);
+    
+    #FACT real == b
+}
+````
+This will fail with dummy-implementation (now shown), so we write *min* using our already written *max* code:
+````c
+int min(int a, int b) {
+  return a + b - max(a,b);
+}
+````
+
+And in fact, this passes all the tests:
+
+````console
+ptr@host:~$ ./falsify.sh max.c max.facts
+Found 4 facts to be checked...
+Fact  max_fact_b_greater_than_a : true
+Fact  max_fact_b_smaller_than_a : true
+Fact  min_fact_b_greater_than_a : true
+Fact  min_fact_b_smaller_than_a : true
+
+4/4 facts were true.
+````
+
+We conclude our *minmax*-example by checking that we actually have full coverage with our facts:
+````console
+ptr@host:~$ ./falsify.sh max.c max.facts
+Found 2 functions to be checked...
+Found 4 facts to be checked...
+
+Coverage is complete for all functions found:  max,min
+````

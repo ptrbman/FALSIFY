@@ -3,13 +3,13 @@
 from falsify.cparser import parse_functions, parse_facts
 from falsify.eldarica import check_formula
 
-def coverage_code_and_facts(codefile, factsfile):
+def coverage(config):
     # Extract all the functions:
-    funs = parse_functions(codefile)
+    funs = parse_functions(config["code_file"])
 
     print("Found", len(funs), "functions to be checked...")
     # Extract all the unit-facts
-    facts = parse_facts(factsfile)
+    facts = parse_facts(config["facts_file"])
 
     print("Found", len(facts), "facts to be checked...")
 
@@ -30,7 +30,7 @@ def coverage_code_and_facts(codefile, factsfile):
             negated = "!(" + call + ")"
             conj.append(negated)
         formula = " && ".join(conj)
-        ret = check_formula(formula, len(funs[fun].arguments))
+        ret = check_formula(formula, len(funs[fun].arguments), config)
         if ret:
             errors.append(fun + ": is missing ( " + ret + ")")
 
