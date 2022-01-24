@@ -160,7 +160,7 @@ Fact  max_fact_a_smaller_than_b : true
 ````
 
 
-### Subsumption check
+### Coverage check
 It is possible to check if all of the input space has been covered by the unit-facts. Note, for coverage to be well-defined the input space must be specificed. Currently, we check each function and see with what range of arguments it has been called. This process is *incomplete* and only takes into account variables which have been set during the set-up phase. To do this, use **coverage**:
 ````console
 ptr@host:~$ ./coverage.sh -cover max.c max.facts
