@@ -1,35 +1,51 @@
-void max_fact_0() {
-  int a = 0;
-  int b = 1;
-  int ret = max(a,b);
-  #FACT ret == 1
-}
+// void max_fact_0() {
+//   int a = 0;
+//   int b = 1;
+//   int ret = max(a,b);
+//   #FACT ret == 1
+// }
 
-void max_fact_1() {
-  int a = 0;
-  int b = _;
-  int ret = max(a,b);
-  #FACT ret == 0
-}
+// void max_fact_1() {
+//   int a = 0;
+//   int b = _;
+//   int ret = max(a,b);
+//   #FACT ret == 0
+// }
 
-void max_fact_2() {
-  int a = 0;
-  int b = _;
-  #ASSUME b < 0
-  int ret = max(a,b);
-  #FACT ret == 0
-}
+// void max_fact_2() {
+//   int a = 0;
+//   int b = _;
+//   #ASSUME b < 0
+//   int ret = max(a,b);
+//   #FACT ret == 0
+// }
 
-void max_fact_3() {
-  int a = _;
-  int b = _;
-  #ASSUME a > 0
-  #ASSUME b < 0
-  int ret = max(a,b);
-  #FACT ret == a
-}
+// void max_fact_3() {
+//   int a = _;
+//   int b = _;
+//   #ASSUME a > 0
+//   #ASSUME b < 0
+//   int ret = max(a,b);
+//   #FACT ret == a
+// }
 
-void max_fact_a_greater_or_equal_to_b() {
+// void max_fact_a_greater_than_b() {
+//   int a = _;
+//   int b = _;
+//   #ASSUME a > b
+//   int ret = max(a,b);
+//   #FACT ret == a
+// }
+
+// void max_fact_a_smaller_than_b() {
+//   int a = _;
+//   int b = _;
+//   #ASSUME a < b
+//   int ret = max(a,b);
+//   #FACT ret == b
+// }
+
+void max_fact_a_greater_than_or_equal_to_b() {
   int a = _;
   int b = _;
   #ASSUME a >= b
@@ -37,10 +53,11 @@ void max_fact_a_greater_or_equal_to_b() {
   #FACT ret == a
 }
 
-void max_fact_a_smaller_or_equal_to_b() {
+void max_fact_a_smaller_than_or_equal_to_b() {
   int a = _;
   int b = _;
   #ASSUME a <= b
   int ret = max(a,b);
   #FACT ret == b
 }
+

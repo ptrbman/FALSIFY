@@ -37,3 +37,43 @@ def get_counterexample(fileName, function, variables):
     result = subprocess.run(command, stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
     return parse_counterexample(output, variables)
+
+## TODO: Change this so formual contains the actual names of the arguments in
+## Function object. And then this function takes the name of the arguments
+## instead of the count.
+
+## TODO: Refactor to have check_file, etc. for eldarica so we can re-use some code.
+def check_formula(formula, arguments):
+
+    # Write to a temporary file
+    lines = []
+    args = []
+    for i in range(arguments):
+        args.append("ARG" + str(i))
+
+    lines.append("void main() {")
+    lines.append("\tint " + ",".join(args) + ";")
+    lines.append("\tif (" + formula + ") {")
+    lines.append("\t\tassert(0 == 1);")
+    lines.append("\t}")
+    lines.append("}")
+
+    outfile = open("tmp/check.c", "w")
+    for l in lines:
+        outfile.write(l)
+    outfile.close()
+
+    command = ['lib/eldarica/eld', "tmp/check.c"]
+    result = subprocess.run(command, stdout=subprocess.PIPE)
+    output = result.stdout.decode('utf-8')
+    is_covered = parse_output(output)
+    if (is_covered):
+        return None
+    else:
+        command = ['lib/eldarica/eld', "-cex", "tmp/check.c"]
+        result = subprocess.run(command, stdout=subprocess.PIPE)
+        output = result.stdout.decode('utf-8')
+        return parse_counterexample(output, args)
+
+
+
