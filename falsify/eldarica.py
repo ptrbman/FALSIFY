@@ -1,6 +1,5 @@
 import subprocess
 import re
-import tempfile
 
 def parse_output(output):
     if output.strip() == "SAFE":

@@ -21,6 +21,7 @@ else:
     config["code_file"] = sys.argv[2]
     config["facts_file"] = sys.argv[3]
     config["eldarica_dir"] = base + "/lib/eldarica/"
+    config["cbmc_dir"] = ""
     config["tmp_dir"] = base + "/tmp/"
     if sys.argv[1] == "falsify":
         falsify(config)

@@ -1,7 +1,7 @@
 ### Main file for running FALSIFY
 
 from falsify.cparser import parse_facts
-from falsify.eldarica import check_fact, get_counterexample
+from falsify.cbmc import check_fact, get_counterexample
 
 import tempfile
 
@@ -19,7 +19,8 @@ def falsify(config):
 
     # The facts are preprocessed to fit eldarica
     for fact in f:
-        outlines.append(f[fact].eldaricaModel())
+        # outlines.append(f[fact].eldaricaModel())
+        outlines.append(f[fact].cbmcModel())
 
     # Write all of it to temporary file
     filename = config["tmp_dir"] + "check.c"
@@ -29,7 +30,6 @@ def falsify(config):
     outfile.close()
 
     print("Found ", len(f), " facts to be checked...", sep="")
-    # Run eldarica on each fact
     no_safe = 0
     for fact in f:
         print("Fact ", fact, ": ", end="")
@@ -42,4 +42,3 @@ def falsify(config):
             print("false (", ret, ")")
     print()
     print(str(no_safe), "/", str(len(f)), " facts were true.", sep="")
-    

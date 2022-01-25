@@ -10,29 +10,6 @@ class Function():
     def __str__(self):
         return self.name + ": " + str(self.arguments) + " -> " + self.retType
 
-    def eldaricaModel(self, assumes, asserts):
-        header = []
-        for arg in self.arguments:
-            header.append("int " + arg + " = _;")
-        header.append("")
-        header.append("int main(void) {")
-
-        newbody = []
-
-        for l in self.body:
-            if isReturn(l):
-                (ws, retExp) = isReturn(l)
-                newbody.append(ws + "int UCC_RETURN_VALUE = " + retExp + ";")
-                for a in asserts:
-                    newbody.append(ws + a.toEldarica())
-                newbody.append(ws + "return UCC_RETURN_VALUE;")
-            else:
-                newbody.append(l)
-
-        return "\n".join(header + newbody)
-
-
-
 class Fact():
     def __init__(self, name, header, body, variables):
         self.name = name
@@ -45,7 +22,7 @@ class Fact():
 
     def eldaricaModel(self):
         newbody = [self.header]
-
+        
         for l in self.body:
            if isFact(l):
                 # We need to change facts to asserts
@@ -56,10 +33,33 @@ class Fact():
                 (ws, retExp) = isAssume(l)
                 newbody.append(ws + "assume(" + retExp + "); // AUTO-GENERATED")
            else:
- 
                 newbody.append(l)
 
         return "\n".join(newbody)
+
+    def cbmcModel(self):
+        newbody = [self.header]
+
+        for l in self.body:
+           if isFact(l):
+                # We need to change facts to asserts
+                (ws, retExp) = isFact(l)
+                newbody.append(ws + "__CPROVER_assert(" + retExp + ", \"test\"); // AUTO-GENERATED")
+           elif isAssume(l):
+                (ws, retExp) = isAssume(l)
+                newbody.append(ws + "__CPROVER_assume(" + retExp + "); // AUTO-GENERATED")
+           elif isIntVariable(l):
+               (ws, name, value) = isIntVariable(l)
+               if value == "_":
+                   newbody.append(ws + "int " + name + " = int_nondet();")
+               else:
+                   newbody.append(ws + "int " + name + " = " + value + ";")
+           else:
+                newbody.append(l)
+
+        return "\n".join(newbody)
+
+
 
     #### TODO: What if we have nested constraints, calls, etc.
     #### TODO: The replacement of arguments is not good
@@ -77,7 +77,7 @@ class Fact():
                     normConstraints.append("(" + ctmp + ")")
                 calls.append(" && ".join(normConstraints))
             if isIntVariable(b):
-                (var, val) = isIntVariable(b)
+                (_, var, val) = isIntVariable(b)
                 if not val == "_":
                     constraints.append(var + " = " + val)
             if isAssume(b):
@@ -107,11 +107,12 @@ def isFactDeclaration(line):
         return None
 
 def isIntVariable(line):
-    r1 = re.findall("\s*int (\S*)\s*=\s*(.*);", line)
+    r1 = re.findall("(\s*)int (\S*)\s*=\s*(.*);", line)
     if r1:
-        name = r1[0][0]
-        value = r1[0][1]
-        return (name, value)
+        ws = r1[0][0]
+        name = r1[0][1]
+        value = r1[0][2]
+        return (ws, name, value)
     else:
         return None
 
@@ -171,7 +172,7 @@ def parse_facts(filename):
             inFact = True
         elif inFact:
             if isIntVariable(line):
-                (name, value) = isIntVariable(line)
+                (_, name, value) = isIntVariable(line)
                 lastVariables.append(name)
             lastFactBody.append(line)
 
