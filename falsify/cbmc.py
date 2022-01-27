@@ -1,13 +1,13 @@
 import subprocess
 import re
 
-def parse_output(output):
-    for l in output.split("\n"):
+def parse_output(stdout, stderr):
+    for l in stdout.split("\n"):
         if "VERIFICATION SUCCESSFUL" in l:
             return True
         elif "VERIFICATION FAILED" in l:
             return False
-    raise Exception("Cannot handle CBMC output: " + output)
+    raise Exception("Cannot handle CBMC output: \n" + stdout + "\n" + stderr)
 
 ## Find states correspdonding to int_nondet and then we can get counter-example
 def parse_counterexample(output, lines):
@@ -21,8 +21,9 @@ def parse_counterexample(output, lines):
 def check_fact(fileName, function, config):
     command = [config["cbmc_dir"] + "cbmc", "--function", function, fileName]
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = result.stdout.decode('utf-8')
-    return parse_output(output)
+    stdout = result.stdout.decode('utf-8')
+    stderr = result.stderr.decode('utf-8')
+    return parse_output(stdout, stderr)
 
 ## TODO: Make a better handler for extracting variable assignment lines
 def find_nondet_lines(fileName):
@@ -58,7 +59,8 @@ def parse_trace(output):
             # Skip
             phase = 2
         elif phase == 2:
-            r1 = re.findall("\s*(.*)=(-?\d+) .*", lines[i])
+            # r1 = re.findall("\s*(.*)=(-?\d+) .*", lines[i])
+            r1 = re.findall("\s*(.*)=(.*) \(.*\).*", lines[i])
             var = r1[0][0]
             val = r1[0][1]
             states.append((int(curCodeLine), var, val))
@@ -71,18 +73,15 @@ def parse_trace(output):
 ## TODO: We should add functionality to find values also for "interesting values" at the point of failure
 def parse_states(states, lines):
     i = 0
-    cex = []
-    while i < len(states):
-        (l, var, val) = states[i]
-        if l in lines:
-            ## Ensure the next one is for the same variable
-            (l2, var2, val2) = states[i+1]
-            if not l == l2 or not var == var2:
-                raise Exception("BUG 001")
-            cex.append(var + ": " + val2)
-            i += 1
+    cex = {}
+    for (l, var, val) in states:
+        if l in lines and lines[l] == var:
+            cex[var] = val
         i += 1
-    return ", ".join(cex)
+    cexstr = []
+    for k in cex:
+        cexstr.append(k + ": " + cex[k])
+    return ", ".join(cexstr)
 
 def get_counterexample(fileName, function, variables, config):
     ## TODO: Beautify experimental
@@ -92,43 +91,3 @@ def get_counterexample(fileName, function, variables, config):
     states = parse_trace(output)
     lines = find_nondet_lines(fileName)
     return parse_states(states, lines)
-
-## TODO: Change this so formual contains the actual names of the arguments in
-# ## Function object. And then this function takes the name of the arguments
-# ## instead of the count.
-
-# ## TODO: Refactor to have check_file, etc. for eldarica so we can re-use some code.
-# def check_formula(formula, arguments, config):
-#     # Write to a temporary file
-#     lines = []
-#     args = []
-#     for i in range(arguments):
-#         args.append("ARG" + str(i))
-
-#     lines.append("void main() {")
-#     lines.append("\tint " + ",".join(args) + ";")
-#     lines.append("\tif (" + formula + ") {")
-#     lines.append("\t\tassert(0 == 1);")
-#     lines.append("\t}")
-#     lines.append("}")
-
-#     filename = config["tmp_dir"] + "/check.c"
-#     outfile = open(filename, "w")
-#     for l in lines:
-#         outfile.write(l)
-#     outfile.close()
-
-#     command = [config["eldarica_dir"] + "eld", filename]
-#     result = subprocess.run(command, stdout=subprocess.PIPE)
-#     output = result.stdout.decode('utf-8')
-#     is_covered = parse_output(output)
-#     if (is_covered):
-#         return None
-#     else:
-#         command = [config["eldarica_dir"] + "eld", "-cex", filename]
-#         result = subprocess.run(command, stdout=subprocess.PIPE)
-#         output = result.stdout.decode('utf-8')
-#         return parse_counterexample(output, args)
-
-
-

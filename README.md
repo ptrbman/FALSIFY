@@ -159,48 +159,6 @@ Fact  max_fact_a_smaller_than_b : true
 2/2 facts were true.
 ````
 
-
-### Coverage check
-It is possible to check if all of the input space has been covered by the unit-facts. Note, for coverage to be well-defined the input space must be specificed. Currently, we check each function and see with what range of arguments it has been called. This process is *incomplete* and only takes into account variables which have been set during the set-up phase. To do this, use **coverage**:
-````console
-ptr@host:~$ ./coverage.sh -cover max.c max.facts
-Found 1 functions to be checked...
-Found 2 facts to be checked...
-
-Coverage is *not* complete:
-max: is missing ( ARG0: 0 ARG1: 0 )
-````
-
-This indicates that our coverage is not complete, and after checking the two unit facts it is indeed the case that none of the unit facts covers the case when *a* equals *b*. We mitigate it by weakening the strong inequality:
-
-````c
-void max_fact_a_greater_than_or_equal_to_b() {
-  int a = _;
-  int b = _;
-  #ASSUME a >= b
-  int ret = max(a,b);
-  #FACT ret == a
-}
-
-void max_fact_a_smaller_than_or_equal_to_b() {
-  int a = _;
-  int b = _;
-  #ASSUME a <= b
-  int ret = max(a,b);
-  #FACT ret == b
-}
-````
-
-If we re-check coverage we see that all cases are now covered:
-
-````console
-ptr@host:~$ ./falsify.sh max.c max.facts
-Found 1 functions to be checked...
-Found 2 facts to be checked...
-
-Coverage is complete for all functions found:  max
-````
-
 # Verification-Driven Development
 As an analogue to test-driven development (TDD), we propose using unit-facts as a driving force for development. The developer gives facts (instead of tests) about the software intended to be written. When such a fact is falsified, the implementation is adjusted accordingly to make sure it becomes true. Then the code can be refactored, and all written facts can be used for regression. 
 
@@ -327,11 +285,146 @@ Fact  min_fact_b_smaller_than_a : true
 4/4 facts were true.
 ````
 
-We conclude our *minmax*-example by checking that we actually have full coverage with our facts:
-````console
-ptr@host:~$ ./falsify.sh max.c max.facts
-Found 2 functions to be checked...
-Found 4 facts to be checked...
+# Example: Implementing a stack
+As another example of VDD, we will implement a fixed-size stack. The API of the stack will consist of two functions, *int push(int elem)* and *int pop(int *elem)*. The idea is that *push* pushes *elem* on the top of the stack, and returns 0 if the stack was not full and non-zero otherwise. *pop* on the other hands sets **elem* to the value of the top of the stack, which is then removed and returns 0 if the stack was non-empty and non-zero otherwise.
 
-Coverage is complete for all functions found:  max,min
+In the spirit of VDD we begin by writing a fact:
+
+````c
+stack_fact_push_and_pop_returns_same() {
+    push(1);
+    int real;
+    pop(&real);
+    assert(real == 1);
+}
+````
+
+We begin with a simple structure failing the test:
+
+````c
+#define STACK_SIZE = 3
+int stack[STACK_SIZE];
+int stack_ptr = 0;
+
+int push(int elem) {
+   return 0;
+}
+
+int pop(int &elem) {
+   return 0;
+}
+````
+
+This fails the test-case:
+
+````console#
+ptr@host:~$ ./falsify.sh stack.c stack.facts
+Found 1 facts to be checked...
+Fact  stack_fact_push_and_pop_returns_same : false (  )
+
+0/1 facts were true.
+````
+
+We create a simple implementation to fix this:
+
+````c
+#define STACK_SIZE 3
+int stack[STACK_SIZE];
+int stack_ptr = 0;
+
+int pop(int *elem) {
+   stack_ptr -= 1;
+   *elem = stack[stack_ptr];
+   return 0;
+}
+
+int push(int elem) {
+   stack[stack_ptr] = elem;
+    stack_ptr += 1;
+   return 0;
+}
+
+````
+
+which now satifies the test:
+
+````console
+ptr@host:~$ ./falsify.sh stack.c stack.facts
+Found 1 facts to be checked...
+Fact  stack_fact_push_and_pop_returns_same : true
+
+1/1 facts were true.
+````
+
+We write the rest of the facts:
+````c
+void stack_fact_push_and_pop_returns_same() {
+    push(1);
+    int real;
+    int retval = pop(&real);
+    assert(real == 1);
+}
+
+void stack_fact_pop_non_empty_gives_0() {
+    push(1);
+    int real;
+    int retval = pop(&real);
+    assert(retval ==  0);
+}
+
+void stack_fact_pop_empty_gives_non_zero() {
+     int tmp;
+     int retval = pop(&tmp);
+     assert(retval != 0);
+}
+
+void stack_fact_push_full_gives_non_zero() {
+     int tmp;
+     for (int i=0; i<STACK_SIZE; i++) {
+         push(0);
+     }
+     int retval = push(0);
+     assert(retval != 0);
+}
+````
+
+Which can be satisfied by the following implementation:
+````c
+#define STACK_SIZE 3
+int stack[STACK_SIZE];
+int stack_ptr = 0;
+
+int pop(int *elem) {
+  return 0;
+  if (stack_ptr == 0) {
+    return 1;
+  } else {
+    stack_ptr -= 1;
+    *elem = stack[stack_ptr];
+    return 0;
+  }
+}
+
+int push(int elem) {
+  return 0;
+  if (stack_ptr < STACK_SIZE) {
+    stack[stack_ptr] = elem;
+    stack_ptr += 1;
+    return 0;
+  } else {
+    return 1;
+  }
+}
+````
+
+Running a final check:
+````console
+ptr@host:~$ ./falsify.sh stack.c stack.facts
+Found 4 facts to be checked...
+Fact  stack_fact_push_and_pop_returns_same : true
+Fact  stack_fact_pop_non_empty_gives_0 : true
+Fact  stack_fact_pop_empty_gives_non_zero : true
+Fact  stack_fact_push_full_gives_non_zero : true
+
+4/4 facts were true.
 ````

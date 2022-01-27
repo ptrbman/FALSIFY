@@ -107,11 +107,11 @@ def isFactDeclaration(line):
         return None
 
 def isIntVariable(line):
-    r1 = re.findall("(\s*)int (\S*)\s*=\s*(.*);", line)
-    if r1:
-        ws = r1[0][0]
-        name = r1[0][1]
-        value = r1[0][2]
+    r = re.fullmatch("(\s*)int (\S*)\s*=\s*(.*);", line)
+    if r:
+        ws = r[1]
+        name = r[2]
+        value = r[3]
         return (ws, name, value)
     else:
         return None
