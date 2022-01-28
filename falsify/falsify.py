@@ -6,10 +6,8 @@ from falsify.cbmc import check_fact, get_counterexample
 import tempfile
 
 def falsify(config):
-    # Extract the code
     file1 = open(config["code_file"], 'r')
     codelines = file1.readlines()
-
     f = parse_facts(config["facts_file"])
     outlines = []
 
@@ -19,7 +17,6 @@ def falsify(config):
 
     # The facts are preprocessed to fit eldarica
     for fact in f:
-        # outlines.append(f[fact].eldaricaModel())
         outlines.append(f[fact].cbmcModel())
 
     # Write all of it to temporary file
@@ -30,15 +27,15 @@ def falsify(config):
     outfile.close()
 
     print("Found ", len(f), " facts to be checked...", sep="")
-    no_safe = 0
+    safe_count = 0
     for fact in f:
         print("Fact ", fact, ": ", end="")
         safe = check_fact(filename, fact, config)
         if safe:
             print("true")
-            no_safe = no_safe + 1
+            safe_count = safe_count + 1
         else:
-            ret = get_counterexample(filename, fact, f[fact].variables, config)
-            print("false (", ret, ")")
+            cex = get_counterexample(filename, fact, f[fact].variables, config)
+            print("false (", cex, ")")
     print()
-    print(str(no_safe), "/", str(len(f)), " facts were true.", sep="")
+    print(str(safe_count), "/", str(len(f)), " facts were true.", sep="")
