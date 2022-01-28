@@ -15,7 +15,6 @@ def falsify(config):
     for l in codelines:
         outlines.append(l)
 
-    # The facts are preprocessed to fit eldarica
     for fact in f:
         outlines.append(f[fact].cbmcModel())
 

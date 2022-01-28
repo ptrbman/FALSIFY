@@ -20,21 +20,6 @@ class Fact():
     def __str__(self):
         return self.name + ": " + self.header
 
-    def eldaricaModel(self):
-        newbody = [self.header]
-
-        for l in self.body:
-           if isFact(l):
-                (ws, retExp) = isFact(l)
-                newbody.append(ws + "assert(" + retExp + "); // AUTO-GENERATED")
-           elif isAssume(l):
-                (ws, retExp) = isAssume(l)
-                newbody.append(ws + "assume(" + retExp + "); // AUTO-GENERATED")
-           else:
-                newbody.append(l)
-
-        return "\n".join(newbody)
-
     def cbmcModel(self):
         newbody = [self.header]
 
