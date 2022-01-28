@@ -3,7 +3,7 @@ void stack_fact_push_and_pop_returns_same() {
     push(val);
     int real;
     int retval = pop(&real);
-    assert(real == val + 1);
+    assert(real == val);
 }
 
 void stack_fact_pop_non_empty_gives_0() {
