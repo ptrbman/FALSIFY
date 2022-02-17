@@ -46,7 +46,8 @@ def parse_states(states, lines):
 # Assumes that there will be a failure
 def get_counterexample(fileName, function, variables, config):
     ## TODO: Beautify experimental
-    command = [config["cbmc_dir"] + "cbmc", "--beautify", "--function", function, "--trace", fileName]
+    ## TODO: Unwindings hard-coded
+    command = [config["cbmc_dir"] + "cbmc", "--beautify", "--unwind", "10", "--function", function, "--trace", fileName]
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
     states = parse_trace(output)
@@ -55,9 +56,33 @@ def get_counterexample(fileName, function, variables, config):
 
 # True if program is SAFE
 def check_fact(fileName, function, config):
-    command = [config["cbmc_dir"] + "cbmc", "--function", function, fileName]
+    command = [config["cbmc_dir"] + "cbmc", "--unwind", "10", "--function", function, fileName]
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout = result.stdout.decode('utf-8')
     stderr = result.stderr.decode('utf-8')
     return parse_output(stdout, stderr)
+
+
+def parse_branch(line):
+    if "FAILURE" in line:
+        r = re.findall(".*Branch (-?\d*): .*", line)
+        return int(r[0])
+    return None
+
+def parse_coverage(output):
+    failed = []
+    for l in output.split("\n"):
+        if "Branch" in l:
+            ret = parse_branch(l)
+            if ret:
+                failed.append(ret)
+    return failed
+
+def coverage_fact(fileName, function, config):
+    command = [config["cbmc_dir"] + "cbmc", "--unwind", "10", "--function", function, fileName]
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout = result.stdout.decode('utf-8')
+    return parse_coverage(stdout)
+
+
 

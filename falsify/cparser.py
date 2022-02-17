@@ -20,13 +20,16 @@ class Fact():
     def __str__(self):
         return self.name + ": " + self.header
 
-    def cbmcModel(self):
+    def cbmcModel(self, disableFacts=False):
         newbody = [self.header]
 
         for l in self.body:
            if isFact(l):
                 (ws, retExp) = isFact(l)
-                newbody.append(ws + "__CPROVER_assert(" + retExp + ", \"test\"); // AUTO-GENERATED")
+                if not disableFacts:
+                    newbody.append(ws + "__CPROVER_assert(" + retExp + ", \"test\"); // AUTO-GENERATED")
+                else:
+                    newbody.append("// Facts disabled")
            elif isAssume(l):
                 (ws, retExp) = isAssume(l)
                 newbody.append(ws + "__CPROVER_assume(" + retExp + "); // AUTO-GENERATED")

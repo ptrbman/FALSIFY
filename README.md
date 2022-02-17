@@ -292,14 +292,15 @@ In the spirit of VDD we begin by writing a fact:
 
 ````c
 stack_fact_push_and_pop_returns_same() {
-    push(1);
+    int val = _;
+    push(val);
     int real;
     pop(&real);
-    assert(real == 1);
+    assert(real == val);
 }
 ````
 
-We begin with a simple structure failing the test:
+Note here that we don't need to give a specific value to the number to be pushed on the stack. We begin with a simple structure failing the test:
 
 ````c
 #define STACK_SIZE = 3
@@ -320,7 +321,7 @@ This fails the test-case:
 ````console#
 ptr@host:~$ ./falsify.sh stack.c stack.facts
 Found 1 facts to be checked...
-Fact  stack_fact_push_and_pop_returns_same : false (  )
+Fact  stack_fact_push_and_pop_returns_same : false ( val: 0 )
 
 0/1 facts were true.
 ````
@@ -359,6 +360,8 @@ Fact  stack_fact_push_and_pop_returns_same : true
 We write the rest of the facts:
 ````c
 void stack_fact_push_and_pop_returns_same() {
+    for (int i = 0; i<STACK_SIZE-1; i++)
+        push(0);
     push(1);
     int real;
     int retval = pop(&real);
@@ -428,3 +431,20 @@ Fact  stack_fact_push_full_gives_non_zero : true
 
 4/4 facts were true.
 ````
+
+# Coverage
+
+We can have different forms of coverage. We here show how branch coverage can be checked using the *FALSIFY* tool.
+
+## Branch coverage
+By the use of the coverage command, we can check if all branches are covered.
+````console
+ptr@host:~$ ./coverage.sh branch.c branch.facts
+Found a total of  6 branches
+Found 3 facts to be checked...
+Fact  fun_fact_0 : 	 [-1]
+Fact  fun_fact_1 : 	 [-1]
+Fact  fun_fact_2 : 	 [1]
+Remaining branches:  4
+````
+This indicates that the two branches 1 and -1 are covered by the facts, but there are four remaining branches not covered.
