@@ -75,22 +75,27 @@ def isIntVariable(line):
         return None
 
 def isFact(line):
-    r1 = re.findall("(\s*)#FACT (.*)", line.rstrip())
+    r1 = re.fullmatch("(\s*)#FACT (.*)", line.rstrip())
     if r1:
-        return (r1[0][0], r1[0][1].strip())
+        return (r1.groups()[0], r1.groups()[1].strip())
     else:
         return None
 
 def isAssume(line):
-    r1 = re.findall("(\s*)#ASSUME (.*)", line.rstrip())
+    r1 = re.fullmatch("(\s*)#ASSUME (.*)", line.rstrip())
     if r1:
-        return (r1[0][0], r1[0][1].strip())
+        return (r1.groups()[0], r1.groups()[1].strip())
     else:
         return None
 
 def parse_facts(filename):
     file1 = open(filename, 'r')
     lines = file1.readlines()
+    realLines = [l for l in lines if not l.lstrip().startswith("//")]
+
+    # Begin by extracting includes, currently we enforce them to be top of file
+    includelines = [l for l in realLines if l.startswith("#include")]
+    codelines = [l for l in realLines if not l.startswith("#include")]
 
     facts = {}
     lastFactBody = []
@@ -98,8 +103,7 @@ def parse_facts(filename):
     lastHeader = ""
     lastVariables = []
     inFact = False
-    realLines = [l for l in lines if not l.lstrip().startswith("//")]
-    for l in realLines:
+    for l in codelines:
         line = l.rstrip()
         if isFactDeclaration(line):
             if inFact:
@@ -118,5 +122,5 @@ def parse_facts(filename):
 
     facts[lastFactName] = Fact(lastFactName, lastHeader, lastFactBody, lastVariables)
 
-    return facts
+    return (includelines, facts)
 

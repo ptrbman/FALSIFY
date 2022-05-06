@@ -1,0 +1,197 @@
+// Adapted from
+// Introduction to Software Testing
+// Authors: Paul Ammann & Jeff Offutt
+// Chapter 6; page ??
+// JUnit for TriangleType.java
+
+void triangle_fact_0() {
+  int s1 = 0;
+  int s2 = 1;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_1() {
+  int s1 = 1;
+  int s2 = 0;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_2() {
+  int s1 = 1;
+  int s2 = 0;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_3() {
+  int s1 = 1;
+  int s2 = 2;
+  int s3 = 3;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_4() {
+  int s1 = 1;
+  int s2 = 3;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_5() {
+  int s1 = 3;
+  int s2 = 1;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_6() {
+  int s1 = 2;
+  int s2 = 2;
+  int s3 = 4;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_7() {
+  int s1 = 2;
+  int s2 = 4;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_8() {
+  int s1 = 4;
+  int s2 = 2;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = INVALID;
+
+  #FACT real == expected
+}
+
+void triangle_fact_9() {
+  int s1 = 2;
+  int s2 = 2;
+  int s3 = 3;
+
+  int real = triangle(s1, s2, s3);
+  int expected = ISOSCELES;
+
+  #FACT real == expected
+}
+
+void triangle_fact_10() {
+  int s1 = 3;
+  int s2 = 2;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = ISOSCELES;
+
+  #FACT real == expected
+}
+
+void triangle_fact_11() {
+  int s1 = 2;
+  int s2 = 3;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = ISOSCELES;
+
+  #FACT real == expected
+}
+
+void triangle_fact_12() {
+  int s1 = 2;
+  int s2 = 2;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = EQUILATERAL;
+
+  #FACT real == expected
+}
+
+void triangle_fact_13() {
+  int s1 = 2;
+  int s2 = 3;
+  int s3 = 4;
+
+  int real = triangle(s1, s2, s3);
+  int expected = SCALENE;
+
+  #FACT real == expected
+}
+
+void triangle_fact_14() {
+  int s1 = 4;
+  int s2 = 3;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = SCALENE;
+
+  #FACT real == expected
+}
+
+void triangle_fact_15() {
+  int s1 = 3;
+  int s2 = 4;
+  int s3 = 2;
+
+  int real = triangle(s1, s2, s3);
+  int expected = SCALENE;
+
+  #FACT real == expected
+}
+
+
+void triangle_fact_equilateral() {
+  int s1 = int_nondet();
+  int s2 = int_nondet();
+  int s3 = int_nondet();
+
+  #ASSUME s1 == s2
+  #ASSUME s2 == s3
+  #ASSUME s1 > 0
+
+  int real = triangle(s1, s2, s3);
+  int expected = EQUILATERAL;
+
+  #FACT real == expected
+}

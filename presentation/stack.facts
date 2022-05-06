@@ -1,0 +1,35 @@
+void stack_fact_push_and_pop_returns_same() {
+    int ul = _;
+    #ASSUME 0<=ul
+    #ASSUME ul<STACK_SIZE
+    for (int i = 0; i<ul; i++)
+        push(0);
+    int val = _;
+    push(val);
+    int real;
+    int retval = pop(&real);
+    #FACT real == val
+}
+
+void stack_fact_pop_non_empty_gives_0() {
+    push(1);
+    int real;
+    int retval = pop(&real);
+    #FACT retval ==  0
+}
+
+void stack_fact_pop_empty_gives_non_zero() {
+     int tmp;
+     int retval = pop(&tmp);
+     #FACT retval != 0
+}
+
+void stack_fact_push_full_gives_non_zero() {
+     int tmp;
+     for (int i=0; i<STACK_SIZE; i++) {
+         push(0);
+     }
+     int retval = push(0);
+     #FACT retval != 0
+}
+

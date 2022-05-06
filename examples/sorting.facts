@@ -1,0 +1,14 @@
+void sorting_fact_1() {
+  int count = int_nondet();
+/* #ASSUME count > 2 && count < 4 */
+#ASSUME count == 3
+  /* int count = 3; */
+  int *A = malloc(sizeof(int)*count);
+  for (int i=0; i<count; i++)
+    A[i] = int_nondet();
+
+  bubble_sort(A, count);
+
+  for (int i=1; i<count; i++)
+    #FACT A[i] >= A[i-1] 
+}

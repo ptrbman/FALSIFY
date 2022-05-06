@@ -1,0 +1,25 @@
+void gcd_fact_1() {
+  int a = _;
+  int b = _;
+  #ASSUME a > 0
+  #ASSUME b == 1
+
+  int real = gcd(a,b);
+  int expected = 1;
+
+
+  #FACT real == expected
+}
+
+void gcd_fact_2() {
+  int a = _;
+  int b = _;
+  #ASSUME a > 0
+  #ASSUME b > 0
+
+  int real = gcd(a,b);
+  #ASSUME real == 0
+
+  #FACT 1 == 0
+}
+

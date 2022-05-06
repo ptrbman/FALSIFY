@@ -10,6 +10,22 @@ def parse_output(stdout, stderr):
             return False
     raise Exception("Cannot handle CBMC output: \n" + stdout + "\n" + stderr)
 
+# Checks for errors, None means everything is ok!
+def parse_stderr(stderr):
+    if not stderr:
+        return None
+
+    for l in stderr.split("\n"):
+        r = re.findall("function (.*) is not declared", l)
+        if r:
+            return "Missing function in " + r[0]
+
+        r = re.findall("fatal error: (.*) file not found", l)
+        if r:
+            return "Missing file " + r[0]
+
+    return "Unhandled error: " + stderr
+
 ## TODO: Make a better handler for extracting variable assignment lines
 def find_nondet_lines(fileName):
     lines = {}
@@ -56,10 +72,28 @@ def get_counterexample(fileName, function, variables, config):
 
 # True if program is SAFE
 def check_fact(fileName, function, config):
-    command = [config["cbmc_dir"] + "cbmc", "--unwind", "10", "--function", function, fileName]
+    includes = []
+    for i in config["includes"]:
+        includes.append("-I")
+        includes.append(i)
+    defines = []
+    for d in config["defines"]:
+        defines.append("-D")
+        defines.append(d)
+
+    code_files = config["code_files"]
+    command = [config["cbmc_dir"] + "cbmc", "--unwind", "10"] + includes + defines + ["--function", function] + code_files + [fileName]
+
+    print(command)
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout = result.stdout.decode('utf-8')
     stderr = result.stderr.decode('utf-8')
+
+    error = parse_stderr(stderr)
+    if error:
+        print("ERROR ENCOUNTERED")
+        print(error)
+        return False
     return parse_output(stdout, stderr)
 
 

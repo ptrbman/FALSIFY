@@ -1,0 +1,18 @@
+void div3_true_if_divisible() {
+  int c = _;
+
+  #ASSUME c % 3 == 0
+  int real = div3(c);
+
+  #FACT real == 1
+}
+
+void div3_false_if_not_divisible() {
+  int c = _;
+
+  #ASSUME c % 3 != 0
+  int real = div3(c);
+
+  #FACT real == 0
+}
+
