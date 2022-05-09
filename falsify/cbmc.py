@@ -31,12 +31,12 @@ def find_nondet_lines(fileName):
     lines = {}
     f = open(fileName, "r")
     for i, l in enumerate(f):
-        if "int_nondet" in l:
+        if "nondet_int" in l and not l == "int nondet_int();\n":
             r1 = re.findall("(\s*)int (\S*)\s*=\s*(.*);", l)
             if r1:
                 lines[i+1] = r1[0][1]
             else:
-                raise Exception("Unhandled nondet")
+                raise Exception("Unhandled nondet: " + l)
     return lines
 
 def parse_trace(output):
@@ -59,19 +59,9 @@ def parse_states(states, lines):
             cex[var] = val
     return ", ".join([k + ": " + cex[k] for k in cex])
 
-# Assumes that there will be a failure
-def get_counterexample(fileName, function, variables, config):
-    ## TODO: Beautify experimental
-    ## TODO: Unwindings hard-coded
-    command = [config["cbmc_dir"] + "cbmc", "--beautify", "--unwind", "10", "--function", function, "--trace", fileName]
-    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = result.stdout.decode('utf-8')
-    states = parse_trace(output)
-    lines = find_nondet_lines(fileName)
-    return parse_states(states, lines)
 
-# True if program is SAFE
-def check_fact(fileName, function, config):
+## TODO: Unwindings hard-coded
+def base_command(config, function):
     includes = []
     for i in config["includes"]:
         includes.append("-I")
@@ -82,9 +72,27 @@ def check_fact(fileName, function, config):
         defines.append(d)
 
     code_files = config["code_files"]
-    command = [config["cbmc_dir"] + "cbmc", "--unwind", "10"] + includes + defines + ["--function", function] + code_files + [fileName]
+    command = [config["cbmc_dir"] + "cbmc", "--unwind", "10"] + includes + defines + ["--function", function] + code_files
+    return command
 
-    print(command)
+
+# Assumes that there will be a failure
+def get_counterexample(fileName, function, variables, config):
+    ## TODO: Beautify experimental
+    bc = base_command(config, function)
+    command = bc + ["--beautify", "--trace", fileName]
+
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = result.stdout.decode('utf-8')
+    states = parse_trace(output)
+    lines = find_nondet_lines(fileName)
+
+    return parse_states(states, lines)
+
+# True if program is SAFE
+def check_test(fileName, function, config):
+    bc = base_command(config, function)
+    command = bc + [fileName]
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout = result.stdout.decode('utf-8')
     stderr = result.stderr.decode('utf-8')
@@ -112,7 +120,7 @@ def parse_coverage(output):
                 failed.append(ret)
     return failed
 
-def coverage_fact(fileName, function, config):
+def coverage_test(fileName, function, config):
     command = [config["cbmc_dir"] + "cbmc", "--unwind", "10", "--function", function, fileName]
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout = result.stdout.decode('utf-8')

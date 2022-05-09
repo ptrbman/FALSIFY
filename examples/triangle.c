@@ -4,10 +4,7 @@
 // Chapter 6; page ??
 // See TriangleTypeTest.java for JUnit tests
 
-const int INVALID = 0;
-const int EQUILATERAL = 1;
-const int ISOSCELES = 2;
-const int SCALENE = 3;
+#include "triangle.h"
 
 int triangle(int s1, int s2, int s3)
 {

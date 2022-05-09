@@ -1,43 +1,41 @@
 ### Main file for running FALSIFY
 
-from falsify.cparser import parse_facts
-from falsify.cbmc import check_fact, get_counterexample
+from falsify.cparser import parse_tests
+from falsify.cbmc import check_test, get_counterexample
 
 import tempfile
 
+# Let's change this: Now, do tests one by one, by introducing a file containing
+# all non-test code and one test. Also, add assert(0 == 1) at the end to ensure
+# unwinding is complete.
+
 def falsify(config):
-    # file1 = open(config["code_file"], 'r')
-    # codelines = file1.readlines()
-    (includelines, facts) = parse_facts(config["test_file"])
-    outlines = []
+    (otherlines, tests) = parse_tests(config["test_file"])
 
-    # The code is unchanged
-    # for l in codelines:
-    #     outlines.append(l)
-
-    # Change test file to CBMC format
-    for test in facts:
-        outlines.append(facts[test].cbmcModel())
-
-    # Write tests to a temporary file
-    filename = config["tmp_dir"] + "check.c"
-    outfile = open(filename, "w")
-    for l in includelines:
-        outfile.write(l)
-    for l in outlines:
-        outfile.write(l)
-    outfile.close()
-
-    print("Found ", len(facts), " fact(s) to be checked...", sep="")
+    print("Found ", len(tests), " test(s) to be checked...", sep="")
     safe_count = 0
-    for fact in facts:
-        print("Fact ", fact, ": ", end="")
-        safe = check_fact(filename, fact, config)
+    otherlines.append("int nondet_int();")
+
+    for test in tests:
+        # Change test file to CBMC format
+        testlines = tests[test].cbmcModel()
+
+        # Write tests to a temporary file
+        filename = config["tmp_dir"] + "check.c"
+        outfile = open(filename, "w")
+        for l in otherlines:
+            outfile.write(l + "\n")
+        for l in testlines:
+            outfile.write(l + "\n")
+        outfile.close()
+
+        print("Test ", test, ": ", end="")
+        safe = check_test(filename, test, config)
         if safe:
             print("true")
             safe_count = safe_count + 1
         else:
-            cex = get_counterexample(filename, fact, facts[fact].variables, config)
+            cex = get_counterexample(filename, test, tests[test].variables, config)
             print("false (", cex, ")")
-    print()
-    print(str(safe_count), "/", str(len(facts)), " facts were true.", sep="")
+    # print()
+    # print(str(safe_count), "/", str(len(tests)), " tests were true.", sep="")

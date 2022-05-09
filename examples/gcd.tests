@@ -1,4 +1,7 @@
-void gcd_fact_1() {
+#include "gcd.h"
+
+#BEGINTEST
+void gcd_test_1() {
   int a = _;
   int b = _;
   #ASSUME a > 0
@@ -8,10 +11,12 @@ void gcd_fact_1() {
   int expected = 1;
 
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void gcd_fact_2() {
+#BEGINTEST
+void gcd_test_2() {
   int a = _;
   int b = _;
   #ASSUME a > 0
@@ -20,6 +25,6 @@ void gcd_fact_2() {
   int real = gcd(a,b);
   #ASSUME real == 0
 
-  #FACT 1 == 0
+  #ASSERT 1 == 0
 }
-
+#ENDTEST

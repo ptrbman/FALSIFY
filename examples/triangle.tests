@@ -4,7 +4,10 @@
 // Chapter 6; page ??
 // JUnit for TriangleType.java
 
-void triangle_fact_0() {
+#include "triangle.h"
+
+#BEGINTEST
+void triangle_test_0() {
   int s1 = 0;
   int s2 = 1;
   int s3 = 2;
@@ -12,10 +15,12 @@ void triangle_fact_0() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_1() {
+#BEGINTEST
+void triangle_test_1() {
   int s1 = 1;
   int s2 = 0;
   int s3 = 2;
@@ -23,10 +28,12 @@ void triangle_fact_1() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_2() {
+#BEGINTEST
+void triangle_test_2() {
   int s1 = 1;
   int s2 = 0;
   int s3 = 2;
@@ -34,10 +41,12 @@ void triangle_fact_2() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_3() {
+#BEGINTEST
+void triangle_test_3() {
   int s1 = 1;
   int s2 = 2;
   int s3 = 3;
@@ -45,10 +54,12 @@ void triangle_fact_3() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_4() {
+#BEGINTEST
+void triangle_test_4() {
   int s1 = 1;
   int s2 = 3;
   int s3 = 2;
@@ -56,10 +67,12 @@ void triangle_fact_4() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_5() {
+#BEGINTEST
+void triangle_test_5() {
   int s1 = 3;
   int s2 = 1;
   int s3 = 2;
@@ -67,10 +80,12 @@ void triangle_fact_5() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_6() {
+#BEGINTEST
+void triangle_test_6() {
   int s1 = 2;
   int s2 = 2;
   int s3 = 4;
@@ -78,10 +93,12 @@ void triangle_fact_6() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_7() {
+#BEGINTEST
+void triangle_test_7() {
   int s1 = 2;
   int s2 = 4;
   int s3 = 2;
@@ -89,10 +106,12 @@ void triangle_fact_7() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_8() {
+#BEGINTEST
+void triangle_test_8() {
   int s1 = 4;
   int s2 = 2;
   int s3 = 2;
@@ -100,10 +119,12 @@ void triangle_fact_8() {
   int real = triangle(s1, s2, s3);
   int expected = INVALID;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_9() {
+#BEGINTEST
+void triangle_test_9() {
   int s1 = 2;
   int s2 = 2;
   int s3 = 3;
@@ -111,10 +132,12 @@ void triangle_fact_9() {
   int real = triangle(s1, s2, s3);
   int expected = ISOSCELES;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_10() {
+#BEGINTEST
+void triangle_test_10() {
   int s1 = 3;
   int s2 = 2;
   int s3 = 2;
@@ -122,10 +145,12 @@ void triangle_fact_10() {
   int real = triangle(s1, s2, s3);
   int expected = ISOSCELES;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_11() {
+#BEGINTEST
+void triangle_test_11() {
   int s1 = 2;
   int s2 = 3;
   int s3 = 2;
@@ -133,10 +158,12 @@ void triangle_fact_11() {
   int real = triangle(s1, s2, s3);
   int expected = ISOSCELES;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_12() {
+#BEGINTEST
+void triangle_test_12() {
   int s1 = 2;
   int s2 = 2;
   int s3 = 2;
@@ -144,10 +171,12 @@ void triangle_fact_12() {
   int real = triangle(s1, s2, s3);
   int expected = EQUILATERAL;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_13() {
+#BEGINTEST
+void triangle_test_13() {
   int s1 = 2;
   int s2 = 3;
   int s3 = 4;
@@ -155,10 +184,12 @@ void triangle_fact_13() {
   int real = triangle(s1, s2, s3);
   int expected = SCALENE;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_14() {
+#BEGINTEST
+void triangle_test_14() {
   int s1 = 4;
   int s2 = 3;
   int s3 = 2;
@@ -166,10 +197,12 @@ void triangle_fact_14() {
   int real = triangle(s1, s2, s3);
   int expected = SCALENE;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-void triangle_fact_15() {
+#BEGINTEST
+void triangle_test_15() {
   int s1 = 3;
   int s2 = 4;
   int s3 = 2;
@@ -177,14 +210,15 @@ void triangle_fact_15() {
   int real = triangle(s1, s2, s3);
   int expected = SCALENE;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST
 
-
-void triangle_fact_equilateral() {
-  int s1 = int_nondet();
-  int s2 = int_nondet();
-  int s3 = int_nondet();
+#BEGINTEST
+void triangle_test_equilateral() {
+  int s1 = _;
+  int s2 = _;
+  int s3 = _;
 
   #ASSUME s1 == s2
   #ASSUME s2 == s3
@@ -193,5 +227,6 @@ void triangle_fact_equilateral() {
   int real = triangle(s1, s2, s3);
   int expected = EQUILATERAL;
 
-  #FACT real == expected
+  #ASSERT real == expected
 }
+#ENDTEST

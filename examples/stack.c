@@ -1,4 +1,5 @@
-#define STACK_SIZE 3
+#include "stack.h"
+
 int stack[STACK_SIZE];
 int stack_ptr = 0;
 

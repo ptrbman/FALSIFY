@@ -1,5 +1,5 @@
 from falsify.falsify import falsify
-from falsify.coverage import branch_coverage
+# from falsify.coverage import branch_coverage
 import sys
 import os
 
@@ -9,7 +9,7 @@ import argparse
 
 
 # Maybe add support for coverage?
-# Add check for .c and .facts
+# Add check for .c and .tests
 
 parser = argparse.ArgumentParser()
 parser.add_argument("code", help="Program code", nargs='+')
@@ -34,7 +34,6 @@ if args.define:
     config["defines"] = args.define
 else:
     config["defines"] = []
-
 
 falsify(config)
 
