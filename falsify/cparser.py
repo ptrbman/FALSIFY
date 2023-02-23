@@ -92,6 +92,7 @@ def isAssume(line):
     else:
         return None
 
+## Parse filename and return tests and the other lines, i.e., program code
 def parse_tests(filename):
     file1 = open(filename, 'r')
     lines = file1.readlines()
@@ -128,6 +129,7 @@ def parse_tests(filename):
                     lastVariables.append(name)
                 lastTestBody.append(line)
         else:
+            # All non-test lines are stored in otherLines
             otherLines.append(line)
 
     return (otherLines, tests)

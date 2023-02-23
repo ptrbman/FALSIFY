@@ -1,3 +1,9 @@
+##
+## Module for handling input/output with CBMC
+##
+##
+
+
 import subprocess
 import re
 
@@ -24,7 +30,7 @@ def parse_stderr(stderr):
         if r:
             return "Missing file " + r[0]
 
-    return "Unhandled error: " + stderr
+    return "Unrecognized error: " + stderr
 
 ## TODO: Make a better handler for extracting variable assignment lines
 def find_nondet_lines(fileName):

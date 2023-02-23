@@ -5,7 +5,7 @@ import os
 import inspect, os.path
 import argparse
 
-## Support arguments, multiple code files, one test file, multiple includes and defines
+## Supports arguments, multiple code files, one test file, multiple includes and defines
 parser = argparse.ArgumentParser()
 parser.add_argument("code", help="Program code", nargs='+')
 parser.add_argument("tests", help="Tests")
@@ -37,6 +37,7 @@ if args.define:
 else:
     config["defines"] = []
 
+## Call falsify with theconfig
 falsify(config)
 
 

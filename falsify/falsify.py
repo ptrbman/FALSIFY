@@ -1,5 +1,3 @@
-### Main file for running FALSIFY
-
 from falsify.cparser import parse_tests
 from falsify.cbmc import check_test, get_counterexample
 
