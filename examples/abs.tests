@@ -1,0 +1,25 @@
+#include "abs.h"
+
+
+#BEGINTEST
+void test_abs_1() {
+     int a = _;
+     #ASSUME a < 0
+
+     int real = abs(a);
+
+     #ASSERT real == -a
+}
+#ENDTEST
+
+#BEGINTEST
+void test_abs_2() {
+  int a = _;
+#ASSUME a > 0
+
+  int real = abs(a);
+
+#ASSERT real == a
+}
+#ENDTEST
+

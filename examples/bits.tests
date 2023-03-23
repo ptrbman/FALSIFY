@@ -1,0 +1,27 @@
+#include "bits.h"
+
+int pow(int x,int n)
+{
+  int i; 
+  int number = 1;
+
+  for (i = 0; i < n; ++i)
+    number *= x;
+
+  return(number);
+}
+
+
+#BEGINTEST
+void test_trailing_zeroes_1() {
+  int zeroes = _;
+  #ASSUME zeroes >= 0 && zeroes <= 32
+  int exp = pow(2, zeroes);
+
+  int n = exp;
+
+  int real = trailing_zeroes(n);
+
+  #ASSERT real == zeroes
+}
+#ENDTEST

@@ -48,12 +48,22 @@ def find_nondet_lines(fileName):
 def parse_trace(output):
     lines = output.split("\n")
     states = []
+    prevCodeLine = 0
     for i in range(0, len(lines)):
         if lines[i].startswith("State"):
             r = re.findall("State \d+ \S* \S* function \S* line (\d+) thread 0", lines[i])
-            curCodeLine = r[0]
+            r2 = re.findall("State \d+ function \S* thread 0", lines[i])
+            if r:
+                curCodeLine = r[0]
+            elif r2:
+                curCodeLine = prevCodeLine
+            else:
+                print("Parser error: ", lines[i])
+                10/0
+
             r = re.findall("\s*(.*)=(.*) \(.*\).*", lines[i+2])
             states.append((int(curCodeLine), r[0][0], r[0][1]))
+            prevCodeLien = curCodeLine
             i += 3
     return states
 

@@ -1,0 +1,20 @@
+#include "sum.h"
+#include <stdlib.h>
+
+#BEGINTEST
+void sum_test_1() {
+  int len = _;
+  #ASSUME len > 0
+
+  int list[len];
+  for (int i=0; i<len; i++) {
+    list[i] = 10000000000;
+  }
+
+  int real = sum(list, len);
+
+  #ASSERT real > 0
+}
+#ENDTEST
+
+

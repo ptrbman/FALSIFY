@@ -36,10 +36,10 @@ void stack_test_pop_empty_gives_non_zero() {
 void stack_test_push_full_gives_non_zero() {
      int tmp;
      for (int i=0; i<STACK_SIZE; i++) {
-         push(0);
+       int e = _;
+         push(e);
      }
      int retval = push(0);
      #ASSERT retval != 0
 }
 #ENDTEST
-

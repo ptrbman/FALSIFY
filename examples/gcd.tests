@@ -3,9 +3,8 @@
 #BEGINTEST
 void gcd_test_1() {
   int a = _;
-  int b = _;
+  int b = 1;
   #ASSUME a > 0
-  #ASSUME b == 1
 
   int real = gcd(a,b);
   int expected = 1;
@@ -15,6 +14,10 @@ void gcd_test_1() {
 }
 #ENDTEST
 
+
+
+
+
 #BEGINTEST
 void gcd_test_2() {
   int a = _;
@@ -23,8 +26,7 @@ void gcd_test_2() {
   #ASSUME b > 0
 
   int real = gcd(a,b);
-  #ASSUME real == 0
 
-  #ASSERT 1 == 0
+  #ASSERT real != 0
 }
 #ENDTEST
