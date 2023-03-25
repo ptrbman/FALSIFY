@@ -1,6 +1,6 @@
 #include "bits.h"
 
-int pow(int x,int n)
+int mypow(int x,int n)
 {
   int i; 
   int number = 1;
@@ -14,11 +14,13 @@ int pow(int x,int n)
 
 #BEGINTEST
 void test_trailing_zeroes_1() {
+  #CONTEXT
   int zeroes = _;
-  #ASSUME zeroes >= 0 && zeroes <= 32
-  int exp = pow(2, zeroes);
+  #ASSUME zeroes >= 0 && zeroes < 32
+  int exps = mypow(2, zeroes);
+  #ENDCONTEXT
 
-  int n = exp;
+  int n = exps;
 
   int real = trailing_zeroes(n);
 

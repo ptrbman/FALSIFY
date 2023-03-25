@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 #BEGINTEST
-void sorting_test_1() {
+void sorting_bubble_sort() {
   int count = _;
-  #ASSUME count == 3
+  #ASSUME count <= 4
 
   int *A = malloc(sizeof(int)*count);
   for (int i=0; i<count; i++)
@@ -13,6 +13,38 @@ void sorting_test_1() {
   bubble_sort(A, count);
 
   for (int i=1; i<count; i++)
+    #ASSERT A[i] >= A[i-1] 
+}
+#ENDTEST
+
+
+
+#BEGINTEST
+void sorting_bursted_bubble() {
+  int count = _;
+  #ASSUME count <= 3
+
+  int *A = malloc(sizeof(int)*count);
+  for (int i=0; i<count; i++)
+    A[i] = _;
+
+  bursted_bubble_sort(A, count);
+
+  for (int i=1; i<count; i++)
+    #ASSERT A[i] >= A[i-1] 
+}
+#ENDTEST
+
+#BEGINTEST
+void sorting_bursted_bubble_2_elements() {
+  int elem1 = _;
+  int elem2 = _;
+
+  int A[] = {elem1, elem2};
+
+  bursted_bubble_sort(A, 2);
+
+  for (int i=1; i<2; i++)
     #ASSERT A[i] >= A[i-1] 
 }
 #ENDTEST

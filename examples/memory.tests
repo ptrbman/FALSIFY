@@ -1,0 +1,13 @@
+#include "memory.h"
+
+#BEGINTEST
+void mem_test() {
+#MEMMAX 5
+  #CONTEXT
+  int m = _;
+  #ASSUME m < 5
+  #ENDCONTEXT
+
+  use_mem(m);
+}
+#ENDTEST

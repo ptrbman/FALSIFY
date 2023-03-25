@@ -15,8 +15,7 @@ int pop(int *elem) {
 
 int push(int elem) {
   if (stack_ptr < STACK_SIZE) {
-    if (stack_ptr != 2)
-      stack[stack_ptr] = elem;
+    stack[stack_ptr] = elem;
     stack_ptr += 1;
     return 0;
   } else {

@@ -1,0 +1,21 @@
+#include "merge_sort.h"
+#include <stdlib.h>
+
+
+#BEGINTEST
+void sorting_test_1() {
+  #CONTEXT
+  int count = _;
+  #ASSUME count > 0
+  #ASSUME count < 4
+  #ENDCONTEXT
+
+  #MEMMAX 11
+  int *A = malloc(sizeof(int)*count);
+  for (int i=0; i<count; i++)
+    A[i] = _;
+
+  merge_sort(A, count);
+
+}
+#ENDTEST

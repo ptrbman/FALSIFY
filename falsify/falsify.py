@@ -1,11 +1,8 @@
-from falsify.cparser import parse_tests
+from falsify.cparser import parse_tests, parse_code_file
 from falsify.cbmc import check_test, get_counterexample
-
+from falsify.pbt import run_pbt
+from falsify.memory import get_memory_info
 import tempfile
-
-# Let's change this: Now, do tests one by one, by introducing a file containing
-# all non-test code and one test. Also, add assert(0 == 1) at the end to ensure
-# unwinding is complete.
 
 def falsify(config):
     (otherlines, tests) = parse_tests(config["test_file"])
@@ -13,6 +10,20 @@ def falsify(config):
     print("Found ", len(tests), " test(s) to be checked...", sep="")
     safe_count = 0
     otherlines.append("int nondet_int();")
+    otherlines.append("int __MEMORY__USAGE__ = 0;")
+    otherlines.append("int __MEMORY__LIMIT__;")
+
+    # We need to edit code_files
+    if config["memory"]:
+        # First get memory info:
+        mem_info = get_memory_info(config["memfiles"])
+        new_code_files = []
+        for cf in config["code_files"]:
+            new_file = parse_code_file(cf, mem_info)
+            new_code_files.append(new_file)
+        config["code_files"] = new_code_files
+
+
 
     for test in tests:
         # Change test file to CBMC format
@@ -28,12 +39,21 @@ def falsify(config):
         outfile.close()
 
         print("Test ", test, ": ", end="")
-        safe = check_test(filename, test, config)
+        (safe, reason) = check_test(filename, test, config)
         if safe:
             print("true")
             safe_count = safe_count + 1
         else:
-            cex = get_counterexample(filename, test, tests[test].variables, config)
-            print("false (", cex, ")")
+            if reason == "UNWIND":
+                print("unknown (insufficient unwindings)")
+                if config["pbt"]:
+                    pbt_result = run_pbt(otherlines, testlines, tests[test], config)
+                    if pbt_result:
+                        print("\tPBT failure: ", pbt_result)
+                    else:
+                        print("\tPBT indicates passing")
+            else:
+                cex = get_counterexample(filename, test, tests[test].variables, config)
+                print("false (", cex, ")")
     # print()
     # print(str(safe_count), "/", str(len(tests)), " tests were true.", sep="")

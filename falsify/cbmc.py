@@ -9,12 +9,32 @@ import re
 
 # Check for the occurrence of the success/failed string
 def parse_output(stdout, stderr):
+    unwinding_failure = False
+    assertion_failure = False
+    verification_result = None
     for l in stdout.split("\n"):
-        if "VERIFICATION SUCCESSFUL" in l:
-            return True
+        if "FAILURE" in l:
+            if "unwinding" in l:
+                unwinding_failure = True
+            elif "assertion" in l:
+                assertion_failure = True
+            else:
+                raise Exception("Unhandled FAILURE: ", l)
+        elif "VERIFICATION SUCCESSFUL" in l:
+            verification_result = "SUCCESS"
         elif "VERIFICATION FAILED" in l:
-            return False
-    raise Exception("Cannot handle CBMC output: \n" + stdout + "\n" + stderr)
+            verification_result = "FAILED"
+
+    if assertion_failure:
+       return (False, "")
+    elif unwinding_failure:
+       return (False, "UNWIND")
+    elif verification_result == "SUCCESS":
+       return (True, "")
+    elif verification_result == "FAILED":
+       raise Exception("Unidentified failure\n:" + stdout + "\n" + stderr)
+    else:
+       raise Exception("Unhandled CBMC output\n:" + stdout + "\n" + stderr)
 
 # Checks for errors, None means everything is ok!
 def parse_stderr(stderr):
@@ -39,8 +59,11 @@ def find_nondet_lines(fileName):
     for i, l in enumerate(f):
         if "nondet_int" in l and not l == "int nondet_int();\n":
             r1 = re.findall("(\s*)int (\S*)\s*=\s*(.*);", l)
+            r2 = re.findall("(\s*)(\S*)\s*=\s*(.*);", l)
             if r1:
                 lines[i+1] = r1[0][1]
+            if r2:
+                lines[i+1] = r2[0][1]
             else:
                 raise Exception("Unhandled nondet: " + l)
     return lines
@@ -75,7 +98,6 @@ def parse_states(states, lines):
             cex[var] = val
     return ", ".join([k + ": " + cex[k] for k in cex])
 
-
 ## TODO: Unwindings hard-coded
 def base_command(config, function):
     includes = []
@@ -88,7 +110,7 @@ def base_command(config, function):
         defines.append(d)
 
     code_files = config["code_files"]
-    command = [config["cbmc_dir"] + "cbmc", "--unwind", "10"] + includes + defines + ["--function", function] + code_files
+    command = [config["cbmc_dir"] + "cbmc", "--unwinding-assertions", "--unwind", config["unwind"]] + includes + defines + ["--function", function] + code_files
     return command
 
 
@@ -97,7 +119,6 @@ def get_counterexample(fileName, function, variables, config):
     ## TODO: Beautify experimental
     bc = base_command(config, function)
     command = bc + ["--beautify", "--trace", fileName]
-
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
     states = parse_trace(output)
@@ -109,16 +130,18 @@ def get_counterexample(fileName, function, variables, config):
 def check_test(fileName, function, config):
     bc = base_command(config, function)
     command = bc + [fileName]
+    if config["verbose"]:
+        print("Command: ", " ".join(command))
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout = result.stdout.decode('utf-8')
     stderr = result.stderr.decode('utf-8')
-
     error = parse_stderr(stderr)
     if error:
         print("ERROR ENCOUNTERED")
         print(error)
         return False
-    return parse_output(stdout, stderr)
+    retval = parse_output(stdout, stderr)
+    return retval
 
 
 def parse_branch(line):

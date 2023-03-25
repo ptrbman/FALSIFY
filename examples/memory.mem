@@ -1,0 +1,7 @@
+#MEMORY 1
+void mem1(int m);
+
+#MEMORY 10
+void mem10(int m);
+
+void use_mem(int m);

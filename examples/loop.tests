@@ -1,0 +1,19 @@
+#include "loop.h"
+
+#BEGINTEST
+void loop_test_1() {
+  #CONTEXT
+  int n = _;
+  int m = _;
+  #ASSUME 0 < n
+  #ASSUME n < 10
+  #ASSUME 0 < m
+  #ASSUME m < 10
+  #ENDCONTEXT
+
+  int real = loop(m, n);
+  int expected = 1;
+
+  #ASSERT real == expected
+}
+#ENDTEST
