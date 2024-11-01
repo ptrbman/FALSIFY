@@ -1,4 +1,3 @@
-
 echo "<<<Regression testing>>>"
 echo ""
 echo "/---\\"

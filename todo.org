@@ -1,2 +1,4 @@
 * Add option for unwiding per tests
-  ** Currently all tests in one run must have same unwidings. Add option on per test basis.
+** Currently all tests in one run must have same unwidings. Add option on per test basis.
+* Add pragma for test phases
+** Perpahs # SET-UP, or add separator between phases?

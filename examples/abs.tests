@@ -1,6 +1,5 @@
 #include "abs.h"
 
-
 #BEGINTEST
 void test_abs_1() {
      int a = _;
