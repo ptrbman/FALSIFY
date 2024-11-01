@@ -138,8 +138,6 @@ def isContext(line):
 def isEndContext(line):
     return "#ENDCONTEXT" in line
 
-
-
 def isMem(line):
     r1 = re.fullmatch("(\s*)#MEMORY (.*)", line.rstrip())
     if r1:
@@ -153,9 +151,6 @@ def isMemEnd(line):
         return True
     else:
         return None
-
-
-
 
 ## Parse filename and return tests and the other lines, i.e., program code
 def parse_tests(filename):

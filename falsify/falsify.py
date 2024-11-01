@@ -55,5 +55,3 @@ def falsify(config):
             else:
                 cex = get_counterexample(filename, test, tests[test].variables, config)
                 print("false (", cex, ")")
-    # print()
-    # print(str(safe_count), "/", str(len(tests)), " tests were true.", sep="")

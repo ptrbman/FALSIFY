@@ -1,6 +1,5 @@
 # FALSIFY
-
-FALSIFY is a prototype framework for test analysis. It works with rich tests over C-code. 
+FALSIFY is a prototype framework for test analysis using CBMC. It works with rich tests over C-code. It currently supports non-deterministic assignments and a naive approach towards computing upper limit on memory usage (based on user-provided memory usage stats).
 
 ## Installation
 
@@ -121,7 +120,3 @@ Test  triangle_test_15 : true
 Test  triangle_test_equilateral : false ( s1: 1459451514, s2: 1459451514, s3: 1459451514 )
 ... should all work except last one
 ```
-
-
-
-

@@ -1,8 +1,6 @@
 ##
 ## Module for handling input/output with CBMC
 ##
-##
-
 
 import subprocess
 import re
@@ -143,7 +141,6 @@ def check_test(fileName, function, config):
     retval = parse_output(stdout, stderr)
     return retval
 
-
 def parse_branch(line):
     if "FAILURE" in line:
         r = re.findall(".*Branch (-?\d*): .*", line)
@@ -164,6 +161,3 @@ def coverage_test(fileName, function, config):
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout = result.stdout.decode('utf-8')
     return parse_coverage(stdout)
-
-
-
